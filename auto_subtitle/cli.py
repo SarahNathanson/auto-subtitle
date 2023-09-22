@@ -78,10 +78,15 @@ def get_audio(paths):
         print(f"Extracting audio from {filename(path)}...")
         output_path = os.path.join(temp_dir, f"{filename(path)}.wav")
 
-        ffmpeg.input(path).output(
-            output_path,
-            acodec="pcm_s16le", ac=1, ar="16k"
-        ).run(quiet=True, overwrite_output=True)
+        try:
+            ffmpeg.input(path).output(
+                output_path,
+                acodec="pcm_s16le", ac=1, ar="16k"
+            ).run(quiet=True, overwrite_output=True)
+        except ffmpeg.Error as e:
+            print('stdout:', e.stdout.decode('utf8'))
+            print('stderr:', e.stderr.decode('utf8'))
+            raise e
 
         audio_paths[path] = output_path
 
